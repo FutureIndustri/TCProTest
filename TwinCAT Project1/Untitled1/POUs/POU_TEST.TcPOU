@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="POU_TEST" Id="{6c244330-7fc7-42cb-962c-460bb006b5ae}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM POU_TEST
+VAR
+	
+TEST	:fb_OrdreAllumage_3; 
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[TEST(
+	Objet:= , 
+	iNbreObjet_A_Allumer:= , 
+	sOrdreDePriorite:= , 
+	bOptimisationOrdreAllumage:= , 
+	iNbreObjetAllume=> , 
+	sPrioriteActuelle=> , 
+	bError=> , 
+	sError=> );]]></ST>
+    </Implementation>
+    <LineIds Name="POU_TEST">
+      <LineId Id="9" Count="7" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

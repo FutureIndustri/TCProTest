@@ -37,6 +37,7 @@ TestPrioFB: fb_OrdreAllumage_3;
 	rVitesseLimPompe3: REAL;
 	rVitesseLimPompe4: REAL;
 	rMesureFIT1: REAL;
+	testt: UINT;
 END_VAR
 
 
@@ -59,6 +60,9 @@ TestPrioFB(
 	sError=> serror);
 
 
+testt:=1+1;
+
+	
 LimitationDebit(
 	bCmdOn:= bCmdOn , 
 	bDefautFIT1:= bDefautFIT1, 
@@ -87,7 +91,11 @@ rVitessePompe1:=rVitessePompe2:=rVitessePompe3:=rVitessePompe4:=rVitessePompe1+ 
       <LineId Id="90" Count="7" />
       <LineId Id="77" Count="0" />
       <LineId Id="160" Count="0" />
-      <LineId Id="172" Count="16" />
+      <LineId Id="252" Count="0" />
+      <LineId Id="172" Count="0" />
+      <LineId Id="254" Count="0" />
+      <LineId Id="253" Count="0" />
+      <LineId Id="173" Count="15" />
       <LineId Id="116" Count="0" />
       <LineId Id="207" Count="0" />
       <LineId Id="170" Count="0" />
