@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_LimitationDebit" Id="{7c6ffa61-96ea-42cc-8038-27bbb54224ba}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_LimitationDebit
+VAR_INPUT
+	bCmdOn			:BOOL:= FALSE; 	//Commande de démarrage de la fonction (désactivée par défaut)
+	bDefautFIT1		:BOOL;		// Defaut capteur débit 1
+ 	bDefautFIT2		:BOOL;		// Defaut capteur débit 2
+	rMesureFIT1		:REAL;		// Mzsure capteur débit 1
+	rMesureFIT2		:REAL;		// Mzsure capteur débit 2
+	rSeuilDebit 	:REAL; 		// Seuil debit a ne pas depasser >> renseigner par operateur
+	tTempsActivation:TIME;		// tempo pour activer la fonction 
+	rVitessePompe1	:REAL;		// Vitesse Pompe1	>> connecter avec la consigne de vitesse de la pompe 1
+	rVitessePompe2	:REAL;		// Vitesse Pompe2	>> connecter avec la consigne de vitesse de la pompe 2
+	rVitessePompe3	:REAL;		// Vitesse Pompe3	>> connecter avec la consigne de vitesse de la pompe 3
+	rVitessePompe4	:REAL;		// Vitesse Pompe4	>> connecter avec la consigne de vitesse de la pompe 4
+END_VAR
+
+
+VAR_OUTPUT
+	bStatusOn		: BOOL; //Retour d'état du fonctionnement de la fonction 
+	rVitesseLimPompe1	:REAL;		// Vitesse Pompe1	>> connecter avec la consigne de vitesse de la pompe 1
+	rVitesseLimPompe2	:REAL;		// Vitesse Pompe2	>> connecter avec la consigne de vitesse de la pompe 2
+	rVitesseLimPompe3	:REAL;		// Vitesse Pompe3	>> connecter avec la consigne de vitesse de la pompe 3
+	rVitesseLimPompe4	:REAL;		// Vitesse Pompe4	>> connecter avec la consigne de vitesse de la pompe 4
+
+END_VAR
+
+
+VAR
+	tTempoSEUILDEBITPDIC41001		:TON;		// tempo demarrage arret fonction limitation debit rcu retour reseau
+	R_TrigSeuilDebit				:R_TRIG;	// detection de front montant de dépassement seuil debit fonction limitation de debit  
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// Fonction limitation de débit
+
+IF bCmdOn THEN   // si fonction activéé
+	
+	IF NOT bDefautFIT1 AND NOT bDefautFIT2 THEN  // si pas de defaut sur les deux capteurs de débit retour réseau général 
+		
+		IF rSeuilDebit > (rMesureFIT1 + rMesureFIT2) THEN		// si le seuil de débit est superieur au débit général retour RCU 
+			tTempoSEUILDEBITPDIC41001(IN:=TRUE,PT:=tTempsActivation);	// tempo avant d'activer la fonction
+			IF tTempoSEUILDEBITPDIC41001.Q THEN
+				bStatusOn:=TRUE; 	// Status ON de la fonction
+				tTempoSEUILDEBITPDIC41001(IN:=FALSE);
+				R_TrigSeuilDebit(CLK:=bStatusOn);
+			END_IF
+			
+			IF R_TrigSeuilDebit.Q THEN	// sauvegardé les consignes de vitesse des pompes
+				rVitesseLimPompe1:=rVitessePompe1; 
+				rVitesseLimPompe2:=rVitessePompe2; 
+				rVitesseLimPompe3:=rVitessePompe3; 
+				rVitesseLimPompe4:=rVitessePompe4;
+			END_IF
+		ELSE
+			bStatusOn:=FALSE; 	// Status OFF de la fonction 	
+			tTempoSEUILDEBITPDIC41001(IN:=FALSE);					// INIT la tempo
+			R_TrigSeuilDebit(CLK:=bStatusOn);
+		END_IF
+		
+	ELSE
+	bStatusOn:=FALSE; 	// Status OFF de la fonction 	
+	tTempoSEUILDEBITPDIC41001(IN:=FALSE);					// INIT la tempo
+	R_TrigSeuilDebit(CLK:=bStatusOn);
+	END_IF
+ELSE
+	bStatusOn:=FALSE;  	// Status OFF de la fonction
+	tTempoSEUILDEBITPDIC41001(IN:=FALSE);					// INIT la tempo
+	R_TrigSeuilDebit(CLK:=bStatusOn);
+END_IF
+
+
+
+(*
+// SI consigne vitesse PID est < a la rVitesseLimPompe et fonction limitation debit actif alors on prend la vitesse du PID 
+IF bCmdOn AND bStatusOn THEN
+	IF RM pompe1 THEN 
+		IF  rVitesseLimPompe1> rVitessePompe1 THEN 
+			
+		rVitesseLimPompe1:=rVitessePompe1;	
+		rVitesseLimPompe2:=rVitessePompe2;
+		rVitesseLimPompe3:=rVitessePompe3;
+		
+		END_IF
+	END_IF
+END_IF
+*) 
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_LimitationDebit">
+      <LineId Id="75" Count="0" />
+      <LineId Id="41" Count="22" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="64" Count="3" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="68" Count="3" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="72" Count="1" />
+      <LineId Id="112" Count="14" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="38" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="fb_OrdreAllumage_3" Id="{7fa278d2-dadb-4581-8710-9939718799ed}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK fb_OrdreAllumage_3
+VAR_IN_OUT
+	Objet : ARRAY[1..iNbreObjet] OF Objet_OrdreAllumage; //Tableau d'objet que l'on souhaite allumer (à renseigner dans l'ordre croissant)
+END_VAR
+VAR_INPUT	
+	iNbreObjet_A_Allumer : INT; //Nombre d'objet qui ont besoin d'etre allumé
+	sOrdreDePriorite : STRING; //Inscrire ici l'ordre de priorité ex : 123
+	bOptimisationOrdreAllumage : BOOL := TRUE; //Indique si on souhaite conserver un objet déja en fonctionnement alors qu'un objet de priorité plus grande devient disponible
+END_VAR
+VAR_OUTPUT
+	iNbreObjetAllume : INT; //Nombre d'objet allumé
+	sPrioriteActuelle : STRING;
+	bError : BOOL;
+	sError : STRING;
+END_VAR
+VAR
+	i : INT;
+	j : INT;
+	iCaseTri : INT;
+	iIndexPointeurPriorite : INT;
+	iNbreObjetRestant_A_Allumer : INT;
+	iNbreObjetNonDispo : INT;
+	iTailleOrdrePriorite : INT;
+	ObjetTrie : ARRAY[1..iNbreObjet] OF Objet_OrdreAllumage; //Tableau trié par priorité
+	aPrioriteActuelle : ARRAY[1..iNbreObjet] OF INT;
+END_VAR
+VAR CONSTANT
+	iNbreObjet : INT := 3; //Renseigner ici le nombre d'objet
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Ce fb permet d'allumer des objets dans l'ordre de priorité du tableau.
+ Si un objet est déja allumé, alors meme si il n'est pas le plus prioritaire, il reste allumé et garde la priorité jusqu'a ce qu'il soit éteint.
+ Une fois éteint, si on le remet dans son bon ordre de priorité*)
+ 
+ //Tri du tableau en fonction de la priorité demandée et gestion d'erreur
+ iTailleOrdrePriorite := LEN(sOrdreDePriorite);
+IF iTailleOrdrePriorite <> iNbreObjet THEN //Si l'ordre de priorité ne correspond pas au nombre d'objet, il y a une erreur
+	bError := TRUE;
+	sError := 'l$'ordre de priorité ne correspond pas au nombre d$'objet';
+	RETURN; 
+END_IF
+
+FOR i := 1 TO iNbreObjet DO //On tri en fonction de la priorité
+	iCaseTri := STRING_TO_INT(MID(sOrdreDePriorite, 1, i));
+	IF iCaseTri > iNbreObjet THEN
+		bError := TRUE;
+		sError := 'Il y a un ordre de priorité plus grand que le nombre d$'objets';
+		RETURN; 
+	ELSE
+		ObjetTrie[i] := Objet[iCaseTri];
+	END_IF	
+END_FOR
+
+FOR i := 1 TO iNbreObjet DO //On regarde si il n'y a pas deux fois le meme objet dans la priorité
+	FOR j := 1 TO iNbreObjet DO
+		IF i <> j AND ObjetTrie[i].Numero = ObjetTrie[j].Numero THEN
+			bError := TRUE;
+			sError := 'Il y a plusieurs fois le meme objet dans l$'ordre de priorité';
+			RETURN; 
+		END_IF
+	END_FOR
+END_FOR
+
+//Si on va jusqu'ici (si on ne va pas dans RETURN), on efface les erreurs
+bError := FALSE;
+sError := '';
+
+
+
+IF bOptimisationOrdreAllumage THEN //Si on souhaite conserver un objet déja en fonctionnement alors qu'un objet de priorité plus grande devient disponible
+	//Calcul du nombre d'objet restant à allumer
+	iNbreObjetRestant_A_Allumer := iNbreObjet_A_Allumer - iNbreObjetAllume;
+	IF iNbreObjetRestant_A_Allumer > 0 THEN  //Allumage des objet disponible
+		FOR i := 1 TO iNbreObjet DO
+			IF ObjetTrie[i].Disponible  //Si dispo
+			 AND NOT ObjetTrie[i].Allume //Si pas déja allumé
+			 AND iNbreObjetRestant_A_Allumer > 0 THEN //Si on doit en allumer encore
+				ObjetTrie[i].Allume := TRUE; //On allumer
+				iNbreObjetRestant_A_Allumer := iNbreObjetRestant_A_Allumer - 1; //On décrémente le nombre d'objets à allumer
+			END_IF	 
+		END_FOR
+	ELSIF iNbreObjetRestant_A_Allumer < 0 THEN //Arret des objets
+		FOR i := iNbreObjet TO 1 BY -1 DO
+			IF ObjetTrie[i].Allume  //Si allumé
+			 AND iNbreObjetRestant_A_Allumer < 0 THEN //Si on doit en éteindre encore
+				ObjetTrie[i].Allume := FALSE; //On éteint
+				iNbreObjetRestant_A_Allumer := iNbreObjetRestant_A_Allumer + 1; //On incrémente le nombre d'objets à allumer
+			END_IF	 
+		END_FOR
+	END_IF
+ELSE //Si on souhaite toujours allumer les objets les plus prioritaires
+	iNbreObjetRestant_A_Allumer := iNbreObjet_A_Allumer;
+	FOR i := 1 TO iNbreObjet DO
+		IF ObjetTrie[i].Disponible  //Si dispo
+		 AND iNbreObjetRestant_A_Allumer > 0 THEN //Si on doit en allumer encore
+			ObjetTrie[i].Allume := TRUE; //On allumer
+			iNbreObjetRestant_A_Allumer := iNbreObjetRestant_A_Allumer - 1; //On décrémente le nombre d'objets à allumer
+		ELSIF iNbreObjetRestant_A_Allumer = 0 THEN //Si on ne doit plus en allumer
+			ObjetTrie[i].Allume := FALSE; //On éteint les autres
+		END_IF			
+	END_FOR
+END_IF
+
+
+ //Calcul du nombre d'objet allumé. On éteint les objet non disponible. 
+ iNbreObjetAllume := 0;
+ iNbreObjetNonDispo := 0;
+FOR i := 1 TO iNbreObjet DO
+	IF ObjetTrie[i].Allume AND ObjetTrie[i].Disponible THEN
+		iNbreObjetAllume := iNbreObjetAllume + 1;
+	ELSIF ObjetTrie[i].Allume AND NOT ObjetTrie[i].Disponible THEN
+		ObjetTrie[i].Allume := FALSE;
+	END_IF
+	IF NOT ObjetTrie[i].Disponible THEN //On calcul le nombre d'objets non disponible
+		iNbreObjetNonDispo := iNbreObjetNonDispo + 1;
+	END_IF
+END_FOR
+ 
+ //On reseigne l'ordre de priorité actuel (en fonction des disponibilité et des objets déja allumé)
+iIndexPointeurPriorite := 1;
+IF iNbreObjetAllume > 0 THEN //On cherche dans un premier temps les objets dispo et allumée
+	FOR i := 1 TO iNbreObjet DO 
+		IF ObjetTrie[i].Disponible AND ObjetTrie[i].Allume THEN
+			aPrioriteActuelle[iIndexPointeurPriorite] := ObjetTrie[i].Numero; 
+			iIndexPointeurPriorite := iIndexPointeurPriorite + 1;
+		END_IF
+	END_FOR
+END_IF
+
+FOR i := 1 TO iNbreObjet DO  //On met ensuite selon la dispo
+	IF ObjetTrie[i].Disponible AND NOT ObjetTrie[i].Allume THEN
+		aPrioriteActuelle[iIndexPointeurPriorite] := ObjetTrie[i].Numero; 
+		iIndexPointeurPriorite := iIndexPointeurPriorite + 1;
+	END_IF
+END_FOR
+
+//On met la priorité actuelle dans un STRING
+sPrioriteActuelle := '';
+FOR i := 1 TO iNbreObjet - iNbreObjetNonDispo DO 
+	sPrioriteActuelle := CONCAT(sPrioriteActuelle, INT_TO_STRING(aPrioriteActuelle[i]));
+END_FOR
+
+
+  //On remet les paramètres du tableau trié dans le tableau rangé en ordre croissant
+FOR i := 1 TO iNbreObjet DO
+	FOR j := 1 TO iNbreObjet DO
+		IF Objet[i].Numero = ObjetTrie[j].Numero THEN
+			Objet[i] := ObjetTrie[j];
+		END_IF	 
+	END_FOR
+END_FOR
+ ]]></ST>
+    </Implementation>
+    <LineIds Name="fb_OrdreAllumage_3">
+      <LineId Id="352" Count="61" />
+      <LineId Id="415" Count="8" />
+      <LineId Id="425" Count="49" />
+      <LineId Id="132" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

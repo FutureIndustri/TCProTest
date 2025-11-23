@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <GVL Name="GVL_IO" Id="{29d734e3-1c37-4879-a7da-c7eb73038b47}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	
+(*
+
+ {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 2 (EL1809)^Channel 1^Input'}
+ 
+ TT41_MES AT %I* : BOOL;
+ 
+  {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 2 (EL1809)^WcState^WcState'}
+ 
+  WClinkM AT %I* : BOOL;
+ 
+ {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 2 (EL1809)^InfoData^State'}
+ 
+  staee AT %Q* : BOOL;
+ 
+  
+  *)
+  
+ //{attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^Term 2 (EL1809)^InfoData^State'}
+   {attribute 'TcLinkTo' := 'TIID^Device 1 (EtherCAT)^Term 1 (EK1200)^EL1809 1^Channel 1^Output'}
+ 
+ TT41_DEFAUT AT %I* : BOOL;
+
+END_VAR
+
+
+
+
+// Term 2 (EL1809)]]></Declaration>
+  </GVL>
+</TcPlcObject>

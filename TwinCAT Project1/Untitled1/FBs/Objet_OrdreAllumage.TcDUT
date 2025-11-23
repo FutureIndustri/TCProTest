@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="Objet_OrdreAllumage" Id="{ca30b57a-c2d0-401d-aaa1-9b2d08cd8605}">
+    <Declaration><![CDATA[TYPE Objet_OrdreAllumage :
+STRUCT
+	Numero : INT;
+	Disponible : BOOL;
+	Allume : BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

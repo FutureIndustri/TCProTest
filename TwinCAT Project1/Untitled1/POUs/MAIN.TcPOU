@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MAIN" Id="{0eb3dbae-cef4-438e-bfba-d75d3553b182}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+
+VAR	
+
+PRIO_P	:FB_Prio_N;
+
+PrioActuel:	STRING;
+
+TestPrioFB: fb_OrdreAllumage_3;
+	object: ARRAY [1..3] OF Objet_OrdreAllumage;
+	nbrobjallume: INT;
+	ordrprio: STRING;
+	optiordraluu: BOOL;
+	nbrobjallumee: INT;
+	prioactu: STRING;
+	errorr: BOOL;
+	serror: STRING;
+	
+	LimitationDebit: FB_LimitationDebit;
+
+	bCmdOn: BOOL;
+	bDefautFIT1: BOOL;
+	bDefautFIT2: BOOL;
+	rMesureFIT2: REAL;
+	rSeuilDebit: REAL;
+	tTempsActivation: TIME;
+	rVitessePompe1: REAL;
+	rVitessePompe2: REAL;
+	rVitessePompe3: REAL;
+	rVitessePompe4: REAL;
+	bStatusOn: BOOL;
+	rVitesseLimPompe1: REAL;
+	rVitesseLimPompe2: REAL;
+	rVitesseLimPompe3: REAL;
+	rVitesseLimPompe4: REAL;
+	rMesureFIT1: REAL;
+END_VAR
+
+
+
+
+VAR CONSTANT
+	
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[PRIO_P(
+	Prio_P:=PrioActuel);
+TestPrioFB(
+	Objet:= object, 
+	iNbreObjet_A_Allumer:=nbrobjallume , 
+	sOrdreDePriorite:=ordrprio , 
+	bOptimisationOrdreAllumage:=optiordraluu , 
+	iNbreObjetAllume=>nbrobjallumee , 
+	sPrioriteActuelle=> prioactu, 
+	bError=> errorr, 
+	sError=> serror);
+
+
+LimitationDebit(
+	bCmdOn:= bCmdOn , 
+	bDefautFIT1:= bDefautFIT1, 
+	bDefautFIT2:= bDefautFIT2, 
+	rMesureFIT1:= rMesureFIT1 , 
+	rMesureFIT2:= rMesureFIT2 , 
+	rSeuilDebit:= rSeuilDebit, 
+	tTempsActivation:= tTempsActivation , 
+	rVitessePompe1:= rVitessePompe1 , 
+	rVitessePompe2:= rVitessePompe2 , 
+	rVitessePompe3:= rVitessePompe3, 
+	rVitessePompe4:= rVitessePompe4, 
+	bStatusOn=> bStatusOn , 
+	rVitesseLimPompe1=> rVitesseLimPompe1, 
+	rVitesseLimPompe2=> rVitesseLimPompe2, 
+	rVitesseLimPompe3=> rVitesseLimPompe3, 
+	rVitesseLimPompe4=> rVitesseLimPompe4);
+
+	
+rVitessePompe1:=rVitessePompe2:=rVitessePompe3:=rVitessePompe4:=rVitessePompe1+ 0.0001;
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="2" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="90" Count="7" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="172" Count="16" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="208" Count="0" />
+      <LineId Id="168" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

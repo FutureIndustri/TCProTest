@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_Prio_N" Id="{42fdefe4-898f-4d0b-8fab-577c31ef9866}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Prio_N
+VAR_INPUT
+Prio_P	:STRING;
+DispoPmp1	:BOOL;
+DispoPmp2	:BOOL;
+DispoPmp3	:BOOL;
+DispoPmp4	:BOOL;
+Tab_PrioPomp: ARRAY [1..4] OF STRING;
+ 
+END_VAR
+VAR_OUTPUT
+	Priorite_PompeOut	:STRING; 
+END_VAR
+VAR
+	
+Tab_Pompe_Prio_IN	:ARRAY[1..4] OF ST_Pompe_Prio;
+Tab_Pompe_Prio_Temp	:ARRAY[1..4] OF ST_Pompe_Prio;
+Tab_Pompe_Prio_OUT	:ARRAY[1..4] OF ST_Pompe_Prio;
+i	:INT;
+j	:INT;
+Tab_Temp	:ST_Pompe_Prio;
+	PompeDispo: INT;
+	Tab_Pompe_Prio_TempdisP :ARRAY[1..4] OF ST_Pompe_Prio;
+	Arret: INT;
+	PmpDispo: INT;
+	x: INT;
+	PrioritePompe: STRING(INT#4);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[ 
+// affectation de la priorité des pompes a chaque pompes 
+FOR i:=1 TO 4 BY 1 DO
+	
+	Tab_Pompe_Prio_IN[I].PmpID:= STRING_TO_INT (MID (Prio_P,1,i));
+	Tab_Pompe_Prio_IN[I].PmpPrioNumero:=i;
+	             	
+END_FOR
+
+// affectation des dispo aux pompes
+
+
+FOR j:=1 TO 4 BY 1 DO
+	
+	IF Tab_Pompe_Prio_IN[j].PmpID=1 THEN 
+		Tab_Pompe_Prio_IN[j].Dispox:=DispoPmp1;
+	ELSIF Tab_Pompe_Prio_IN[j].PmpID=2 THEN 
+		Tab_Pompe_Prio_IN[j].Dispox:=DispoPmp2;
+	ELSIF Tab_Pompe_Prio_IN[j].PmpID=3 THEN 
+		Tab_Pompe_Prio_IN[j].Dispox:=DispoPmp3;
+	ELSIF Tab_Pompe_Prio_IN[j].PmpID=4 THEN 
+		Tab_Pompe_Prio_IN[j].Dispox:=DispoPmp4;	
+	END_IF
+END_FOR 
+
+Tab_Pompe_Prio_IN[1].PmpID;
+              
+Tab_Pompe_Prio_IN[2].PmpID;
+              
+Tab_Pompe_Prio_IN[3].PmpID;
+             
+Tab_Pompe_Prio_IN[4].PmpID;
+
+ // affecter les pompes disponibles dans un tableau pour savoir combien de pmp dispo
+j:=1;
+i:=1;
+x:=0;
+
+FOR i:=1 TO 4 BY 1 DO
+	IF 	Tab_Pompe_Prio_IN[i].Dispox=TRUE THEN
+		Tab_Pompe_Prio_Tempdisp[j]:=Tab_Pompe_Prio_IN[i];
+		j:=j+1;
+	ELSE
+		Tab_Pompe_Prio_Tempdisp[4-X].PmpID:=0;
+		x:=x+1;
+	END_IF
+	
+	PmpDispo:=j-1;
+END_FOR
+
+Tab_PrioPomp[1]:= INT_TO_STRING(Tab_Pompe_Prio_Tempdisp[1].PmpID);
+Tab_PrioPomp[2]:= INT_TO_STRING(Tab_Pompe_Prio_Tempdisp[2].PmpID);
+Tab_PrioPomp[3]:= INT_TO_STRING(Tab_Pompe_Prio_Tempdisp[3].PmpID);
+Tab_PrioPomp[4]:= INT_TO_STRING(Tab_Pompe_Prio_Tempdisp[4].PmpID);
+
+
+
+IF  0 < pmpdispo AND pmpdispo <5 THEN
+	
+	Priorite_PompeOut:='';	
+	FOR i:=1 TO pmpdispo BY 1 DO 
+		
+		Priorite_PompeOut:=concat (Priorite_PompeOut, Tab_PrioPomp[i]);
+	
+	END_FOR	
+ELSE 	Priorite_PompeOut:='0	';
+END_IF	
+
+
+(* code pour tri ordre croissant
+FOR i:=1 TO 3 BY 1 DO
+	
+	FOR j:=1 TO 4 - i BY 1 DO
+		IF 		Tab_Pompe_Prio_temp[i].PmpID >= Tab_Pompe_Prio_Temp[j+1].PmpID THEN
+			
+			Tab_Temp:=Tab_Pompe_Prio_Temp[j];
+			Tab_Pompe_Prio_Temp[j]:=Tab_Pompe_Prio_Temp[j+1];
+			Tab_Pompe_Prio_Temp[j+1]:=Tab_Temp;
+		END_IF
+	END_FOR
+	
+END_FOR
+*)
+
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Prio_N">
+      <LineId Id="83" Count="1" />
+      <LineId Id="101" Count="1" />
+      <LineId Id="3" Count="0" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="128" Count="2" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="134" Count="6" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="104" Count="4" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="10" Count="1" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="146" Count="1" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="144" Count="1" />
+      <LineId Id="150" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="151" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="172" Count="1" />
+      <LineId Id="175" Count="2" />
+      <LineId Id="215" Count="1" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="221" Count="0" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="226" Count="0" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="222" Count="0" />
+      <LineId Id="224" Count="0" />
+      <LineId Id="223" Count="0" />
+      <LineId Id="217" Count="0" />
+      <LineId Id="227" Count="0" />
+      <LineId Id="220" Count="0" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="153" Count="12" />
+      <LineId Id="169" Count="1" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="65" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

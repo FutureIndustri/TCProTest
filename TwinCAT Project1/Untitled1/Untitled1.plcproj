@@ -1,0 +1,91 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <FileVersion>1.0.0.0</FileVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{20f81bda-536c-4635-8b55-32482d311567}</ProjectGuid>
+    <SubObjectsSortedByName>True</SubObjectsSortedByName>
+    <DownloadApplicationInfo>true</DownloadApplicationInfo>
+    <WriteProductVersion>true</WriteProductVersion>
+    <GenerateTpy>false</GenerateTpy>
+    <Name>Untitled1</Name>
+    <ProgramVersion>3.1.4024.0</ProgramVersion>
+    <Application>{c9733580-de50-492c-8bd5-849e06bfb96a}</Application>
+    <TypeSystem>{54e0a162-d99e-479b-907d-171fb06313b5}</TypeSystem>
+    <Implicit_Task_Info>{129d29a7-4cd9-478d-a41d-127974d5c4ff}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{51fe99ec-b213-4ebf-835c-fbbcbc5c1162}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{d9e69ed8-52e3-4138-a186-f64f6cf897ed}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{26082e3f-65a9-4597-9931-f8f25fcda57b}</LibraryReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DUTs\ST_Pompe_Prio.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FBs\fb_OrdreAllumage_3.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FBs\FB_Prio_N.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FBs\FB_Temporaire\FB_LimitationDebit.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FBs\Objet_OrdreAllumage.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GVLs\GVL_IO.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
+    <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DUTs" />
+    <Folder Include="FBs" />
+    <Folder Include="FBs\FB_Temporaire" />
+    <Folder Include="GVLs" />
+    <Folder Include="VISUs" />
+    <Folder Include="POUs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderReference Include="Tc2_Standard">
+      <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_System">
+      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Module">
+      <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Module</Namespace>
+    </PlaceholderReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Untitled1.tmc">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
+  <ProjectExtensions>
+    <PlcProjectOptions>
+      <XmlArchive>
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
+      <v n="Name">"&lt;ProjectRoot&gt;"</v>
+      <d n="SubKeys" t="Hashtable" />
+      <d n="Values" t="Hashtable" />
+    </o>
+        </Data>
+        <TypeList>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
+    </PlcProjectOptions>
+  </ProjectExtensions>
+</Project>
